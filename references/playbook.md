@@ -23,6 +23,18 @@ Each play below covers: what changes, getting started (prerequisites and infrast
 2. **Two layers of guardrails.** Conventions and skills are advisory controls that make compliant behavior likely; hooks are deterministic controls that make violations nearly impossible. A policy that must always hold gets a hook behind the skill.
 3. **Humans hold the judgment positions.** Agents generate, execute, and mechanically verify. High-risk actions and final approvals stay human. The agent goes all the way to the production gate — and no further.
 4. **Don't throw away existing tools.** Jira, Figma, GitHub, and Slack stay. For every artifact, name one system as the source of truth (repo markdown or the legacy system), and keep cross-references in both directions.
+5. **Gates fail closed.** Approval is the human's explicit answer to the gate question — nothing else counts. A skipped, dismissed, timed-out, errored, or unanswered prompt is a rejection: stop and wait. Earlier feedback, requested edits, or a changed artifact never imply approval; after edits the gate is asked again.
+
+### Gate protocol
+
+When a phase reaches its gate (intent → Design, spec → Build, plan → code, PR → merge, release → production):
+
+1. Present the artifact and ask one explicit question with the decision named: "accept / request changes / reject". State that no answer means the workflow waits.
+2. **Counted as approval:** only the human's direct answer accepting the gate. A "yes, but…" naming changes counts only after the changes are made *and* an explicit accept follows.
+3. **Counted as rejection:** the human skips, dismisses, or closes the prompt; the prompt times out; the prompt fails to deliver at all (tool error, dialog never rendered, environment skips the question); the human is unresponsive; the answer is ambiguous. On rejection, stop at the gate, summarize in one line what is waiting on a decision, and end the turn. Re-ask at most once; if still unanswered, wait silently — do not proceed and do not schedule the next phase. A gate you could not physically present is still a gate: report the delivery failure and wait for a reachable human, never treat "the question went nowhere" as consent.
+4. **Never infer approval** from prior conversation, requested edits, the artifact's quality, or elapsed time. If you find yourself writing "I'll treat this as accepted", you are violating the gate. You also have no authority to amend this protocol mid-run: substituting your own policy — "skip = continue", "batch-approve everything at the end", "the user prefers chat feedback, so dialogs are optional" — is the exact inversion of fail-closed and is itself a gate violation, however well it seems to fit the user's observed behavior. The user skipping gates is a process problem to surface ("the gate keeps getting dismissed — how do you want to review?"), never a problem to solve by lowering the gate.
+5. Close the gate in one step: `workflow_state.py close --node <name> --approver <who> --evidence <ref>`. It records the decision in the gate ledger, advances the graph node, **and flips the artifact's own `Status:` field** (Draft → Accepted/Approved, or Rejected) — the three copies of gate state stay in one commit, so the state view cannot silently drift behind the ledger (recording without advancing is the drift to avoid — `check` and `status` warn about it).
+6. Before starting the next phase, run `workflow_state.py check --strict` and require exit 0. It fails when a later phase's artifact exists without the previous gate's ledger record — exactly the "generated the artifact, the gate prompt got skipped, moved on anyway" drift. A failing or erroring check means stop, go back, and re-ask the gate; never continue forward on an unrecorded gate.
 
 ## Phase 1 — Plan: capture intent as intent.md
 
@@ -37,6 +49,8 @@ Each play below covers: what changes, getting started (prerequisites and infrast
 3. Write the result as intent.md using the org template (which can be encoded as a skill). It points straight at the sources: the problem, proposed outcome, affected users and systems, constraints, out of scope, and open questions. Fields are structured enough for the agent to act on them directly, and plain enough for the product owner to review without engineering knowledge.
 4. The originator corrects anything the agent misunderstood.
 5. Commit intent.md to the shared home. Author and timestamp join the record, and the product owner picks it up from there.
+
+**Iteration convention.** `intent/intent.md` is always the *current* intent. A new iteration never invents a new path (no `intent-002.md`): archive the previous intent as `intent/NNN-<slug>.md` and write the new draft at `intent/intent.md`. The workflow graph, `check`, and `preflight` all track that fixed path — a differently-named file is invisible to the enforcement tooling.
 
 **Governance.** The evidence is the committed intent.md with its full revision history. The product owner approves; the accept-or-reject decision that sends the intent into Design is recorded as the merge or the closing review.
 

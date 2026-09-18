@@ -1,6 +1,6 @@
 ---
 name: ai-sdlc
-version: 0.1.0
+version: 0.1.7
 description: Run the AI-native SDLC loop — Plan, Design, Build, Test, Deploy, Maintain — with versioned artifacts and human approval gates at every handoff. Use when the user states a goal, idea, feature, or change request and expects the agent to scaffold and drive the project through the full lifecycle instead of jumping straight to code.
 ---
 
@@ -16,7 +16,7 @@ The workflow is framework-agnostic. Claude Code calls the repository-memory file
 
 ## Hard rules
 
-1. **Human gates are real gates.** Do not advance without approval: intent accepted → Design; spec approved → Build; plan approved → code; PR merged → Deploy; release authorized → production.
+1. **Human gates are real gates, and they fail closed.** Do not advance without approval: intent accepted → Design; spec approved → Build; plan approved → code; PR merged → Deploy; release authorized → production. Approval is only the human's explicit answer to the gate question (accept/approve, or a reply that names changes and then an explicit accept). A skipped, dismissed, timed-out, unanswered, errored, or undelivered gate prompt is a **rejection**: stop, state what is waiting on a decision, and wait. If the gate question could not even be asked (tool error, prompt skipped by the environment, dialog never shown), report that failure and stop — a broken gate is never a license to pass through it. Never convert earlier feedback, requested edits, or conversation tone into approval — "the user asked for changes" means the gate must be re-asked after those changes, not auto-passed. The phrase "I'll treat this as accepted" marks a gate violation the moment you write it. You have no authority to amend the gate protocol mid-run: inventing policies like "skip = continue" or "approve in batch later" is the exact inversion of fail-closed and is itself the violation. A phase counts as advanced only when its acceptance is recorded in the gate ledger and the workflow state advances through that record — one step with `workflow_state.py close`; no ledger record means the gate was not passed.
 2. **Never cross the production gate.** Agent-generated changes stop at the merge/release boundary. High-risk actions (production config, migrations, releases) require explicit human authorization, enforced by a hook where possible.
 3. **Verify before asking for review.** Run build, tests, lint, and screenshots yourself first; fix what fails; only then hand work to a human.
 4. **Encode repeated lessons.** The same mistake twice → write the correction into the project's CLAUDE.md, a skill, or a hook.
@@ -33,7 +33,7 @@ deterministic layer (makes violation nearly impossible), or a review pass
 
 | Hard rule | Advisory (skill/CLAUDE.md) | Deterministic (hook/file) | Checked at |
 |---|---|---|---|
-| 1. Gates are real | CLAUDE.md conventions | committed artifact chain in git; hooks | gate acceptance commits |
+| 1. Gates are real | CLAUDE.md conventions | committed artifact chain in git; `workflow_state.py check --strict` flags a later phase's artifact without the previous gate's ledger record | gate acceptance commits |
 | 2. Never cross the production gate | this skill | `production-gate.sh` + approval/expiry; release approvals recorded in the hash-chained gate ledger (`gate_ledger.py`) | Deploy gate |
 | 3. Verify before review | CLAUDE.md "Verifying your work" | single `make`-style verify commands | PR template evidence |
 | 4. Encode repeated lessons | CLAUDE.md "Things the agent gets wrong" | protected-path hooks | second-time-mistake rule in reviews |
@@ -51,7 +51,7 @@ When the user gives a goal or idea and there is no workflow in place yet:
 
 1. Scaffold the artifact skeleton with `scripts/init_workflow.py <project-dir> --name "<project name>" --framework codex|claude` (codex writes AGENTS.md, claude writes CLAUDE.md), or copy templates from `assets/` into an existing repo.
 2. Run **Plan**: interview the user with analyst-style questions — what cannot be done today, who is affected, what success looks like, constraints, what is out of scope — until the idea is concrete.
-3. Write `intent/intent.md` from the template, commit it, and ask the product owner to accept or reject. Acceptance triggers Design.
+3. Write `intent/intent.md` from the template, commit it, and ask the product owner to accept or reject. Acceptance triggers Design. **Iteration naming (always):** `intent/intent.md` is the *current* intent — archive a finished one as `intent/NNN-<slug>.md` and write the new draft at `intent/intent.md`. Never invent new live-intent paths like `intent-002.md`: the graph, `check`, and `preflight` track only `intent/intent.md` and will not see anything else.
 
 If the user is already inside a later phase (for example, "review this PR" or "diagnose this incident"), start at that phase instead.
 
@@ -131,7 +131,7 @@ Organization-level examples to wire up during adoption:
 - `scripts/run_evals.py` — run the eval suite locally or in CI (Phase 4), with `--min-pass-rate` gating
 - `scripts/detect_bands.py` — deterministic control-band detection (Phase 6 reference implementation: rolling window, Western Electric rules, drift rule)
 - `scripts/gate_ledger.py` — hash-chained approval ledger: every gate decision is a committed, tamper-evident record; the release gate verifies `RELEASE_APPROVAL=ledger:<id>` against it
-- `scripts/workflow_state.py` — deterministic workflow state runtime (`status`/`advance`/`check`): graph nodes advance only through matching, chain-verified ledger records
+- `scripts/workflow_state.py` — deterministic workflow state runtime (`status`/`advance`/`close`/`check`/`preflight`): `close` passes a gate in one step (ledger record + graph advance, so the state view cannot drift); graph nodes move only through matching, chain-verified ledger records; `check --strict` also fails when a later phase's artifact exists while the previous gate has no approved record (catches "artifact written, gate prompt skipped, moved on anyway")
 - `scripts/check_plan_sync.py` — deterministic plan-sync enforcement: implementation changes require an approved plan.md manifest in PR/CI or pre-commit mode
 - `scripts/sync_issues.py` — GitHub issue intake for the product engineering agent (`pull` open issues into `org/intake/github/`, `push` a feature ticket)
 - `scripts/org_status.py` — agent busy/idle and review-queue management (`status`, `agent`, `review`) against `org/status.yaml`

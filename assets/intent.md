@@ -1,5 +1,10 @@
 # <Title>
 
+<!-- Convention: intent/intent.md is always the CURRENT intent. When a new
+     iteration starts, archive the previous one as intent/NNN-<slug>.md and
+     write the new draft here — the workflow graph, check, and preflight all
+     track this fixed path. -->
+
 - Author: <name>
 - Source: <team or channel>
 - Status: Draft | Accepted | Rejected

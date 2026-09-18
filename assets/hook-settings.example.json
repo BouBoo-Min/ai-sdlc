@@ -9,6 +9,15 @@
             "command": "${CLAUDE_PROJECT_DIR}/hooks/production-gate.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PROJECT_DIR}/scripts/workflow_state.py preflight"
+          }
+        ]
       }
     ]
   }

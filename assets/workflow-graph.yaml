@@ -6,6 +6,11 @@
 #
 # status: not_started | in_progress | accepted | approved | in_review |
 #         merged | pending | done
+#
+# Naming: node names are the ARTIFACT they produce; `stage` is the SDLC
+# phase that produces it. They are not synonyms — the intent node
+# (stage: plan) closes as `accepted`, while the plan node (stage: build)
+# closes as `approved`. Status vocabulary follows each node's gate.
 
 version: 1
 
