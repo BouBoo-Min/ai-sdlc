@@ -1,5 +1,7 @@
 # AI-Native SDLC — reusable workflow repo
 
+[![skills.sh](https://skills.sh/b/BouBoo-Min/ai-sdlc)](https://skills.sh/BouBoo-Min/ai-sdlc)
+
 English | [简体中文](README.zh-CN.md)
 
 A ready-to-inherit implementation of Anthropic's [AI-Native SDLC playbook](https://claude.com/blog/the-ai-native-sdlc-playbook) (see also the reference implementation at [bashebr/ai-native-sdlc](https://github.com/bashebr/ai-native-sdlc)): give your coding agent a goal or idea, and it scaffolds and drives the project through the full lifecycle — **Plan → Design → Build → Test → Deploy → Maintain** — with human approval gates at every handoff.
@@ -37,6 +39,21 @@ Plan → Design → Build → Test → Deploy → Maintain
 The phase → artifact → gate contract lives in [`skills/ai-sdlc/SKILL.md`](skills/ai-sdlc/SKILL.md) (single source of truth). The machine-readable graph state is `workflow-graph.yaml` — the one skeleton file that stays at a project's root; everything else lives under `iterations/` (including `REVIEW.md`, `bands.yaml`, and the optional agent org).
 
 ## Install
+
+### Via skills.sh (recommended, works with Claude Code, Codex, Cursor, OpenCode, and 75+ agents)
+
+```bash
+npx skills add BouBoo-Min/ai-sdlc
+```
+
+Install to a specific agent only:
+
+```bash
+npx skills add BouBoo-Min/ai-sdlc --skill ai-sdlc -a claude-code   # Claude Code
+npx skills add BouBoo-Min/ai-sdlc --skill ai-sdlc -a codex         # Codex
+```
+
+Add `-g` for a global install (available in all projects) instead of the current project. Browse the skill at [skills.sh/BouBoo-Min/ai-sdlc](https://skills.sh/BouBoo-Min/ai-sdlc).
 
 ### As a Codex skill
 

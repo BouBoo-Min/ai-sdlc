@@ -1,5 +1,7 @@
 # AI-Native SDLC — 可复用工作流仓库
 
+> [![skills.sh](https://skills.sh/b/BouBoo-Min/ai-sdlc)](https://skills.sh/BouBoo-Min/ai-sdlc)
+>
 > English | [简体中文](README.zh-CN.md)
 
 一个开箱即用的 Anthropic [AI-Native SDLC playbook](https://claude.com/blog/the-ai-native-sdlc-playbook) 实现（另见参考实现 [bashebr/ai-native-sdlc](https://github.com/bashebr/ai-native-sdlc)）：给你的编码 agent 一个目标或想法，它就会搭建骨架并驱动项目走完整生命周期——**Plan → Design → Build → Test → Deploy → Maintain**——每一次交接都有人工审批门禁。
@@ -37,6 +39,21 @@ Plan → Design → Build → Test → Deploy → Maintain
 阶段 → 工件 → 门禁 的完整契约见 [`skills/ai-sdlc/SKILL.md`](skills/ai-sdlc/SKILL.md)（唯一权威来源）。机器可读的图状态是 `workflow-graph.yaml`——骨架中唯一留在项目根目录的文件；其余全部位于 `iterations/` 下（包括 `REVIEW.md`、`bands.yaml` 和可选的 agent 组织）。
 
 ## 安装
+
+### 通过 skills.sh 安装（推荐，支持 Claude Code、Codex、Cursor、OpenCode 等 75+ 个 Agent）
+
+```bash
+npx skills add BouBoo-Min/ai-sdlc
+```
+
+只安装到指定 Agent：
+
+```bash
+npx skills add BouBoo-Min/ai-sdlc --skill ai-sdlc -a claude-code   # Claude Code
+npx skills add BouBoo-Min/ai-sdlc --skill ai-sdlc -a codex         # Codex
+```
+
+加 `-g` 表示全局安装（对所有项目可用），不加则安装到当前项目。技能页面：[skills.sh/BouBoo-Min/ai-sdlc](https://skills.sh/BouBoo-Min/ai-sdlc)。
 
 ### 作为 Codex skill
 
