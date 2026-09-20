@@ -113,6 +113,10 @@ python3 skills/ai-sdlc/scripts/init_org.py my-project
 - **评审文化** — `iterations/REVIEW.md` 定义 AI PR 评审循环的软规则：三轮 pass（bug、安全、合规）、证据要求、5 条 nit 上限。
 - **监控分级** — `iterations/bands.yaml` 定义 1σ/2σ/3σ 响应；3σ 时 agent 只能通过开 PR 进入评审门禁，或触发预批准 runbook。
 
+## 许可证
+
+MIT — 见 [LICENSE](LICENSE)。本项目衍生自 [bashebr/ai-native-sdlc](https://github.com/bashebr/ai-native-sdlc)（MIT）。
+
 ## 开发
 
 校验整个 bundle（frontmatter、链接、插件清单、YAML/JSON、shell 语法、门禁测试、脚手架冒烟测试）：
@@ -124,4 +128,4 @@ python3 skills/ai-sdlc/scripts/quick_validate.py
 ## 参考资料
 
 - [The AI-Native SDLC playbook](https://claude.com/blog/the-ai-native-sdlc-playbook) — 本工作流实现的 Anthropic 博客原文。
-- [bashebr/ai-native-sdlc](https://github.com/bashebr/ai-native-sdlc) — 本项目目录结构所参考的仓库。
+- [bashebr/ai-native-sdlc](https://github.com/bashebr/ai-native-sdlc) — 本项目是它的**衍生作品**，依据 MIT 许可证在其基础上改编；结构、脚本与模板均源自该项目。

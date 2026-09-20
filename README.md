@@ -113,6 +113,10 @@ See [`skills/ai-sdlc/references/org.md`](skills/ai-sdlc/references/org.md) for t
 - **Review culture** — `iterations/REVIEW.md` sets the soft rules for the AI PR-review loop: passes (bugs, security, compliance), the evidence requirement, and the 5-nit cap.
 - **Monitoring tiers** — `iterations/bands.yaml` defines 1σ/2σ/3σ responses; at 3σ the agent may act only by opening a PR into the review gate or triggering a pre-approved runbook.
 
+## License
+
+MIT — see [LICENSE](LICENSE). This project derives from [bashebr/ai-native-sdlc](https://github.com/bashebr/ai-native-sdlc) (MIT).
+
 ## Development
 
 Validate the bundle (frontmatter, links, plugin manifest, YAML/JSON assets, shell syntax, gate tests, scaffold smoke test):
@@ -124,4 +128,4 @@ python3 skills/ai-sdlc/scripts/quick_validate.py
 ## References
 
 - [The AI-Native SDLC playbook](https://claude.com/blog/the-ai-native-sdlc-playbook) — the Anthropic blog post this workflow implements.
-- [bashebr/ai-native-sdlc](https://github.com/bashebr/ai-native-sdlc) — the reference repo this project's structure follows.
+- [bashebr/ai-native-sdlc](https://github.com/bashebr/ai-native-sdlc) — this project is a **derivative of** that repo and derives from it under the MIT License; its structure, scripts, and templates are adapted here.
